@@ -2,6 +2,7 @@
   "name": "boardcamp",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "dev": "nodemon src/app.js",
