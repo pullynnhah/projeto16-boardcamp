@@ -3,16 +3,64 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readRentals = async (req, res) => {
+  const { customerId, gameId } = req.query;
+
   try {
-    const { rows: rentals } = await db.query(`
-    SELECT r.*, 
-           json_build_object('id', c.id, 'name', c.name) AS customer,
-           json_build_object('id', g.id, 'name', g.name) AS game
-    FROM rentals r
-    JOIN customers c ON c.id = r."customerId"
-    JOIN games g ON g.id = r."gameId";
-    `);
-    res.send(rentals);
+    if (customerId && gameId) {
+      const { rows: rentals } = await db.query(
+        `
+      SELECT r.*, 
+            json_build_object('id', c.id, 'name', c.name) AS customer,
+            json_build_object('id', g.id, 'name', g.name) AS game
+      FROM rentals r
+      JOIN customers c ON c.id = r."customerId"
+      JOIN games g ON g.id = r."gameId"
+      WHERE customerId = $1 AND gameId = $2;
+      `,
+        [customerId, gameId]
+      );
+      res.send(rentals);
+    } else if (customerId && gameId) {
+      const { rows: rentals } = await db.query(
+        `
+      SELECT r.*, 
+            json_build_object('id', c.id, 'name', c.name) AS customer,
+            json_build_object('id', g.id, 'name', g.name) AS game
+      FROM rentals r
+      JOIN customers c ON c.id = r."customerId"
+      JOIN games g ON g.id = r."gameId"
+      WHERE customerId = $1;
+      `,
+        [customerId]
+      );
+      res.send(rentals);
+    } else if (customerId && gameId) {
+      const { rows: rentals } = await db.query(
+        `
+      SELECT r.*, 
+            json_build_object('id', c.id, 'name', c.name) AS customer,
+            json_build_object('id', g.id, 'name', g.name) AS game
+      FROM rentals r
+      JOIN customers c ON c.id = r."customerId"
+      JOIN games g ON g.id = r."gameId"
+      WHERE gameId = $1;
+      `,
+        [gameId]
+      );
+      res.send(rentals);
+    } else {
+      const { rows: rentals } = await db.query(
+        `
+      SELECT r.*, 
+            json_build_object('id', c.id, 'name', c.name) AS customer,
+            json_build_object('id', g.id, 'name', g.name) AS game
+      FROM rentals r
+      JOIN customers c ON c.id = r."customerId"
+      JOIN games g ON g.id = r."gameId";
+    `
+      );
+      res.send(rentals);
+    }
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }

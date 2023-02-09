@@ -3,9 +3,22 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readCustomers = async (req, res) => {
+  const { cpf } = req.query;
+
   try {
-    const { rows: customers } = await db.query("SELECT * FROM customers;");
-    res.send(customers);
+    if (cpf) {
+      const { rows: customers } = await db.query(
+        `
+      SELECT * 
+      FROM customers
+      WHERE LOWER(name) LIKE LOWER($1);`,
+        [`${cpf}%`]
+      );
+      res.send(customers);
+    } else {
+      const { rows: customers } = await db.query("SELECT * FROM customers;");
+      res.send(customers);
+    }
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
