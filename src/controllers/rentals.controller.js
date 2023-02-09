@@ -15,7 +15,7 @@ const readRentals = async (req, res) => {
       FROM rentals r
       JOIN customers c ON c.id = r."customerId"
       JOIN games g ON g.id = r."gameId"
-      WHERE customerId = $1 AND gameId = $2;
+      WHERE "customerId" = $1 AND "gameId" = $2;
       `,
         [customerId, gameId]
       );
@@ -29,7 +29,7 @@ const readRentals = async (req, res) => {
       FROM rentals r
       JOIN customers c ON c.id = r."customerId"
       JOIN games g ON g.id = r."gameId"
-      WHERE customerId = $1;
+      WHERE "customerId" = $1;
       `,
         [customerId]
       );
@@ -43,7 +43,7 @@ const readRentals = async (req, res) => {
       FROM rentals r
       JOIN customers c ON c.id = r."customerId"
       JOIN games g ON g.id = r."gameId"
-      WHERE gameId = $1;
+      WHERE "gameId" = $1;
       `,
         [gameId]
       );
