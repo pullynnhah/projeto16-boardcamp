@@ -20,14 +20,14 @@ const createCustomer = async (req, res) => {
     INSERT INTO customers 
     (name, phone, cpf, birthday)
     SELECT $1, $2, $3, $4
-    WHERE (SELECT COUNT(*) FROM customers WHERE cpf = $5) = 0;
+    WHERE NOT EXISTS (SELECT COUNT(*) FROM customers WHERE cpf = $5);
     `,
       [name, phone, cpf, birthday, cpf]
     );
     if (rowCount === 1) res.sendStatus(StatusCodes.CREATED);
     else res.sendStatus(409);
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
 };
 
@@ -52,7 +52,7 @@ const updateCustomer = async (req, res) => {
     if (rowCount === 1) res.sendStatus(StatusCodes.OK);
     else res.sendStatus(409);
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
 };
 

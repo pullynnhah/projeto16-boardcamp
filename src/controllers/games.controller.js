@@ -25,9 +25,9 @@ const createGame = async (req, res) => {
       [name, image, stockTotal, pricePerDay, name]
     );
     if (rowCount === 1) res.sendStatus(StatusCodes.CREATED);
-    else res.sendStatus(409);
+    else res.sendStatus(StatusCodes.CONFLICT);
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
 };
 

@@ -9,8 +9,7 @@ const router = Router();
 router.get("/customers", customersControllers.readCustomers);
 router.get("/customers/:id", customersControllers.findCustomer);
 
-router.use(validate(schema));
-router.post("/customers", customersControllers.createCustomer);
-router.put("/customers/:id", customersControllers.updateCustomer);
+router.post("/customers", validate(schema), customersControllers.createCustomer);
+router.put("/customers/:id", validate(schema), customersControllers.updateCustomer);
 
 export default router;
