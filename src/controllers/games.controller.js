@@ -20,7 +20,7 @@ const createGame = async (req, res) => {
     INSERT INTO games 
     (name, image, "stockTotal", "pricePerDay")
     SELECT $1, $2, $3, $4
-    WHERE (SELECT COUNT(*) FROM games WHERE name = $5) = 0;
+    WHERE NOT EXISTS (SELECT * FROM games WHERE name = $5);
     `,
       [name, image, stockTotal, pricePerDay, name]
     );

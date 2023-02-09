@@ -99,4 +99,28 @@ const returnRental = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
 };
-export { readRentals, createRental, returnRental };
+
+const deleteRental = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { rows } = await db.query("SELECT * FROM rentals WHERE id = $1", [id]);
+    if (!rows[0]) res.sendStatus(StatusCodes.NOT_FOUND);
+    else {
+      const { rowCount } = await db.query(
+        `
+      DELETE rentals
+      WHERE id = $1
+      AND "returnDate" IS NOT NULL;
+      `,
+        [id]
+      );
+      if (rowCount === 1) res.sendStatus(StatusCodes.OK);
+      else res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+  }
+};
+
+export { readRentals, createRental, returnRental, deleteRental };
