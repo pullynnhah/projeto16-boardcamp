@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/rentals", rentalsControllers.readRentals);
 router.post("/rentals/:id/return", rentalsControllers.returnRental);
-router.delete("/rental/:id", rentalsControllers.deleteRental);
+router.delete("/rentals/:id", rentalsControllers.deleteRental);
 router.post("/rentals", validate(schema), rentalsControllers.createRental);
 
 export default router;
