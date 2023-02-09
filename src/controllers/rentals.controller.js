@@ -4,8 +4,15 @@ import db from "../database/db.connection.js";
 
 const readRentals = async (req, res) => {
   try {
-    const { rows: games } = await db.query("SELECT * FROM games;");
-    res.send(games);
+    const { rows: rentals } = await db.query(`
+    SELECT r.*, 
+           json_build_object('id', c.id, 'name', c.name) AS customer,
+           json_build_object('id', g.id, 'name', g.name) AS game
+    FROM rentals r
+    JOIN customers c ON c.id = r."customerId"
+    JOIN games g ON g.id = r."gameId";
+    `);
+    res.send(rentals);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
