@@ -21,8 +21,6 @@ const readRentals = async (req, res) => {
 const createRental = async (req, res) => {
   const { customerId, gameId, daysRented } = req.body;
 
-  const rentDate = new Date();
-
   try {
     const { rowCount } = await db.query(
       `
@@ -55,7 +53,7 @@ const createRental = async (req, res) => {
       [
         customerId,
         gameId,
-        rentDate,
+        new Date(),
         daysRented,
         daysRented,
         gameId,
@@ -72,4 +70,33 @@ const createRental = async (req, res) => {
   }
 };
 
-export { readRentals, createRental };
+const returnRental = async (req, res) => {
+  const { id } = req.params;
+  const date = new Date();
+
+  try {
+    const { rows } = await db.query("SELECT * FROM rentals WHERE id = $1", [id]);
+    if (!rows[0]) res.sendStatus(StatusCodes.NOT_FOUND);
+    else {
+      const { rowCount } = await db.query(
+        `
+      UPDATE rentals
+      SET "returnDate" = $1,
+      "delayFee" = (
+        SELECT "pricePerDay"
+        FROM games
+        WHERE id = rentals."gameId"
+      ) * GREATEST(0, DATE_PART('day', $2::timestamp - "rentDate"::timestamp))
+      WHERE id = $3
+      AND "returnDate" ISNULL;
+      `,
+        [date, date, id]
+      );
+      if (rowCount === 1) res.sendStatus(StatusCodes.OK);
+      else res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+  }
+};
+export { readRentals, createRental, returnRental };

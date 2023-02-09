@@ -66,7 +66,7 @@ const findCustomer = async (req, res) => {
       [id]
     );
     if (customer[0]) res.send(customer[0]);
-    else res.sendStatus(404);
+    else res.sendStatus(StatusCodes.NOT_FOUND);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
