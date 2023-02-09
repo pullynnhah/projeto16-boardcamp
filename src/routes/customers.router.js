@@ -7,5 +7,6 @@ const router = Router();
 
 router.get("/customers", customersControllers.readCustomers);
 router.post("/customers", customersMiddleware, customersControllers.createCustomer);
+router.get("/customers/:id", customersControllers.findCustomer);
 
 export default router;

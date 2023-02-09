@@ -31,4 +31,20 @@ const createCustomer = async (req, res) => {
   }
 };
 
-export { readCustomers, createCustomer };
+const findCustomer = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows: customer } = await db.query(
+      `
+    SELECT * FROM customers
+    WHERE id = $1`,
+      [id]
+    );
+    if (customer.length === 0) res.sendStatus(404);
+    else res.send(customer);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+  }
+};
+
+export { readCustomers, createCustomer, findCustomer };

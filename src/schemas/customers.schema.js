@@ -10,7 +10,7 @@ const schema = joi.object({
     .string()
     .pattern(/^[0-9]{10,11}$/)
     .required(),
-  birthday: joi.date().raw().required()
+  birthday: joi.date().required()
 });
 
 export default schema;
