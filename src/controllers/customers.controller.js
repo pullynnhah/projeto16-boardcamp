@@ -31,6 +31,31 @@ const createCustomer = async (req, res) => {
   }
 };
 
+const updateCustomer = async (req, res) => {
+  const { name, phone, cpf, birthday } = req.body;
+  const { id } = req.params;
+
+  try {
+    const { rowCount } = await db.query(
+      `
+    UPDATE customers
+    SET name = $1,
+        phone = $2,
+        cpf = $3,
+        birthday = $4
+
+    WHERE id = $5 
+    AND NOT EXISTS (SELECT * FROM customers WHERE cpf = $6);
+    `,
+      [name, phone, cpf, birthday, id, cpf]
+    );
+    if (rowCount === 1) res.sendStatus(StatusCodes.CREATED);
+    else res.sendStatus(409);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+  }
+};
+
 const findCustomer = async (req, res) => {
   const { id } = req.params;
   try {
@@ -47,4 +72,4 @@ const findCustomer = async (req, res) => {
   }
 };
 
-export { readCustomers, createCustomer, findCustomer };
+export { readCustomers, createCustomer, findCustomer, updateCustomer };
