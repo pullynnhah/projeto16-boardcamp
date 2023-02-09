@@ -45,9 +45,9 @@ const updateCustomer = async (req, res) => {
         birthday = $4
 
     WHERE id = $5 
-    AND NOT EXISTS (SELECT * FROM customers WHERE cpf = $6);
+    AND NOT EXISTS (SELECT * FROM customers WHERE cpf = $6 AND id <> $7);
     `,
-      [name, phone, cpf, birthday, id, cpf]
+      [name, phone, cpf, birthday, id, cpf, id]
     );
     if (rowCount === 1) res.sendStatus(StatusCodes.OK);
     else res.sendStatus(409);
