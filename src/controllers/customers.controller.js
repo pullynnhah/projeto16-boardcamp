@@ -49,7 +49,7 @@ const updateCustomer = async (req, res) => {
     `,
       [name, phone, cpf, birthday, id, cpf]
     );
-    if (rowCount === 1) res.sendStatus(StatusCodes.CREATED);
+    if (rowCount === 1) res.sendStatus(StatusCodes.OK);
     else res.sendStatus(409);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
