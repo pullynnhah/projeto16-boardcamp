@@ -4,6 +4,7 @@ import db from "../database/db.connection.js";
 
 const readRentals = async (req, res) => {
   const { customerId, gameId } = req.query;
+  console.log(req.query);
 
   try {
     if (customerId && gameId) {
@@ -20,7 +21,7 @@ const readRentals = async (req, res) => {
         [customerId, gameId]
       );
       res.send(rentals);
-    } else if (customerId && gameId) {
+    } else if (customerId) {
       const { rows: rentals } = await db.query(
         `
       SELECT r.*, 
@@ -34,7 +35,7 @@ const readRentals = async (req, res) => {
         [customerId]
       );
       res.send(rentals);
-    } else if (customerId && gameId) {
+    } else if (gameId) {
       const { rows: rentals } = await db.query(
         `
       SELECT r.*, 
