@@ -107,7 +107,7 @@ const deleteRental = async (req, res) => {
     const { rows } = await db.query("SELECT * FROM rentals WHERE id = $1", [id]);
     if (!rows[0]) res.sendStatus(StatusCodes.NOT_FOUND);
     else {
-      const data = await db.query(
+      const { rowCount } = await db.query(
         `
       DELETE FROM rentals
       WHERE id = $1
