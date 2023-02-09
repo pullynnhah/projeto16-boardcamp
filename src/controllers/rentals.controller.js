@@ -86,7 +86,7 @@ const returnRental = async (req, res) => {
         SELECT "pricePerDay"
         FROM games
         WHERE id = rentals."gameId"
-      ) * GREATEST(0, DATE_PART('day', $2::timestamp - "rentDate"::timestamp))
+      ) * GREATEST(0, DATE_PART('day', $2::timestamp - "rentDate"::timestamp) - "daysRented")
       WHERE id = $3
       AND "returnDate" ISNULL;
       `,
