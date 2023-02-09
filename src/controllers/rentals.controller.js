@@ -109,7 +109,7 @@ const deleteRental = async (req, res) => {
     else {
       const { rowCount } = await db.query(
         `
-      DELETE rentals
+      DELETE FROM rentals
       WHERE id = $1
       AND "returnDate" IS NOT NULL;
       `,
