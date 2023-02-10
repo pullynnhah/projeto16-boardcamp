@@ -3,22 +3,36 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readGames = async (req, res) => {
-  const { name } = req.query;
+  const { name, limit, offset, order, desc } = req.query;
 
+  const params = [];
+  let query = "SELECT * FROM games ";
+
+  if (name) {
+    params.push(`${name}%`);
+    query += `WHERE LOWER(name) LIKE LOWER($${params.length}) `;
+  }
+
+  if (order) {
+    query += `ORDER BY ${order} `;
+  }
+
+  query += desc ? "DESC " : "";
+
+  if (limit) {
+    params.push(Number(limit));
+    query += `LIMIT $${params.length} `;
+  }
+
+  if (offset) {
+    params.push(Number(offset));
+    query += `OFFSET $${params.length};`;
+  } else query += ";";
+
+  console.log(query);
   try {
-    if (name) {
-      const { rows: games } = await db.query(
-        `
-      SELECT * 
-      FROM games
-      WHERE LOWER(name) LIKE LOWER($1);`,
-        [`${name}%`]
-      );
-      res.send(games);
-    } else {
-      const { rows: games } = await db.query(`SELECT * FROM games;`);
-      res.send(games);
-    }
+    const { rows: games } = await db.query(query, params);
+    res.send(games);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
   }
