@@ -3,8 +3,16 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readCustomers = async (req, res) => {
+  const { cpf } = req.query;
   const { queryString, params } = res.locals;
-  const query = "SELECT * FROM customers" + queryString;
+
+  const query = "SELECT * FROM customers";
+  if (cpf) {
+    params.unshift(`${cpf}%`);
+    query += ` WHERE LOWER(cpf) LIKE LOWER($${params.length})`;
+  }
+  query += queryString;
+
   try {
     const { rows: customers } = await db.query(query, params);
     res.send(customers);

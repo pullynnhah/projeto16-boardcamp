@@ -7,7 +7,7 @@ import validate from "../middlewares/validate.middleware.js";
 
 const router = Router();
 
-router.get("/rentals", queryMiddleware(["customerId", "gameId"]), rentalsControllers.readRentals);
+router.get("/rentals", queryMiddleware, rentalsControllers.readRentals);
 router.post("/rentals/:id/return", rentalsControllers.returnRental);
 router.delete("/rentals/:id", rentalsControllers.deleteRental);
 router.post("/rentals", validate(schema), rentalsControllers.createRental);

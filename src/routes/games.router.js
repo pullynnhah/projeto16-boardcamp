@@ -7,7 +7,7 @@ import validate from "../middlewares/validate.middleware.js";
 
 const router = Router();
 
-router.get("/games", queryMiddleware(["name"]), gamesControllers.readGames);
+router.get("/games", queryMiddleware, gamesControllers.readGames);
 router.post("/games", validate(schema), gamesControllers.createGame);
 
 export default router;

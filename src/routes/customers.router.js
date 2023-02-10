@@ -7,7 +7,7 @@ import validate from "../middlewares/validate.middleware.js";
 
 const router = Router();
 
-router.get("/customers", queryMiddleware(["cpf"]), customersControllers.readCustomers);
+router.get("/customers", queryMiddleware, customersControllers.readCustomers);
 router.get("/customers/:id", customersControllers.findCustomer);
 
 router.post("/customers", validate(schema), customersControllers.createCustomer);

@@ -3,16 +3,30 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readRentals = async (req, res) => {
+  const { customerId, gameId } = req.query;
   const { queryString, params } = res.locals;
-  const query =
-    `
+
+  let query = `
   SELECT r.*, 
         json_build_object('id', c.id, 'name', c.name) AS customer,
         json_build_object('id', g.id, 'name', g.name) AS game
   FROM rentals r
   JOIN customers c ON c.id = r."customerId"
   JOIN games g ON g.id = r."gameId"
-  ` + queryString;
+  `;
+
+  if (customerId && gameId) {
+    params.unshift(gameId);
+    params.unshift(customerId);
+    query += ` WHERE "customerId" = $${params.length - 1} AND "gameId" $${params.length}`;
+  } else if (customerId) {
+    params.unshift(customerId);
+    query += ` WHERE "customerId" = $${params.length}`;
+  } else if (gameId) {
+    params.unshift(gameId);
+    query += ` WHERE "gameId" = $${params.length}`;
+  }
+  query += queryString;
 
   try {
     const { rows: rentals } = await db.query(query, params);

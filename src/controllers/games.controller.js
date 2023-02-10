@@ -3,8 +3,15 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readGames = async (req, res) => {
+  const { name } = req.query;
   const { queryString, params } = res.locals;
-  const query = "SELECT * FROM games" + queryString;
+  let query = "SELECT * FROM games";
+
+  if (name) {
+    params.unshift(`${name}%`);
+    query += ` WHERE LOWER(name) LIKE LOWER($${params.length})`;
+  }
+  query += queryString;
 
   try {
     const { rows: games } = await db.query(query, params);
