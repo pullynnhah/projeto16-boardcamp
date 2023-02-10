@@ -14,7 +14,7 @@ const readGames = async (req, res) => {
   }
 
   if (order) {
-    query += `ORDER BY ${order} `;
+    query += `ORDER BY "${order}" `;
   }
 
   query += desc ? "DESC " : "";
