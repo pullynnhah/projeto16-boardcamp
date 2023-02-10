@@ -5,8 +5,8 @@ import db from "../database/db.connection.js";
 const readGames = async (req, res) => {
   const { name } = req.query;
   const { queryString, params } = res.locals;
-  let query = "SELECT * FROM games";
 
+  let query = "SELECT * FROM games";
   if (name) {
     params.unshift(`${name}%`);
     query += ` WHERE LOWER(name) LIKE LOWER($${params.length})`;

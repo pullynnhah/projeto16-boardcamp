@@ -6,7 +6,7 @@ const readCustomers = async (req, res) => {
   const { cpf } = req.query;
   const { queryString, params } = res.locals;
 
-  const query = "SELECT * FROM customers";
+  let query = "SELECT * FROM customers";
   if (cpf) {
     params.unshift(`${cpf}%`);
     query += ` WHERE LOWER(cpf) LIKE LOWER($${params.length})`;
