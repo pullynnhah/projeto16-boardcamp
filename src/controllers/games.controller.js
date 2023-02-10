@@ -6,27 +6,27 @@ const readGames = async (req, res) => {
   const { name, limit, offset, order, desc } = req.query;
 
   const params = [];
-  let query = "SELECT * FROM games ";
+  let query = "SELECT * FROM games";
 
   if (name) {
     params.push(`${name}%`);
-    query += `WHERE LOWER(name) LIKE LOWER($${params.length}) `;
+    query += ` WHERE LOWER(name) LIKE LOWER($${params.length})`;
   }
 
   if (order) {
-    query += `ORDER BY "${order}" `;
+    query += ` ORDER BY "${order}"`;
   }
 
-  query += desc ? "DESC " : "";
+  query += desc ? " DESC" : "";
 
   if (limit) {
     params.push(Number(limit));
-    query += `LIMIT $${params.length} `;
+    query += ` LIMIT $${params.length}`;
   }
 
   if (offset) {
     params.push(Number(offset));
-    query += `OFFSET $${params.length};`;
+    query += ` OFFSET $${params.length};`;
   } else query += ";";
 
   console.log(query);
