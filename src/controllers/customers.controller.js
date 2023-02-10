@@ -1,17 +1,20 @@
 import { StatusCodes } from "http-status-codes";
 
 import db from "../database/db.connection.js";
+import queryGenerator from "../utils/query.js";
 
 const readCustomers = async (req, res) => {
-  const { cpf } = req.query;
-  const { queryString, params } = res.locals;
+  const { cpf, limit, offset, order, desc } = req.query;
+  const isOrderValid = ["id", "name", "phone", "cpf", "birthday"].find(item => item === order);
+  const queryValues = { limit, offset, order: isOrderValid ? order : null, desc };
 
-  let query = "SELECT * FROM customers";
+  let queryString = "SELECT * FROM customers";
+  const filters = [];
   if (cpf) {
-    params.unshift(`${cpf}%`);
-    query += ` WHERE cpf LIKE $${params.length}`;
+    filters.push(`${cpf}%`);
+    queryString += ` WHERE cpf LIKE $1`;
   }
-  query += queryString;
+  const { query, params } = queryGenerator(queryString, filters, queryValues);
 
   try {
     const { rows: customers } = await db.query(query, params);

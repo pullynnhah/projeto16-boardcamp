@@ -1,13 +1,12 @@
 import { Router } from "express";
 
 import * as customersControllers from "../controllers/customers.controller.js";
-import queryMiddleware from "../middlewares/query.middleware.js";
-import schema from "../schemas/customers.schema.js";
 import validate from "../middlewares/validate.middleware.js";
+import schema from "../schemas/customers.schema.js";
 
 const router = Router();
 
-router.get("/customers", queryMiddleware, customersControllers.readCustomers);
+router.get("/customers", customersControllers.readCustomers);
 router.get("/customers/:id", customersControllers.findCustomer);
 
 router.post("/customers", validate(schema), customersControllers.createCustomer);

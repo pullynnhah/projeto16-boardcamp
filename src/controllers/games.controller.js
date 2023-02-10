@@ -1,17 +1,22 @@
 import { StatusCodes } from "http-status-codes";
 
 import db from "../database/db.connection.js";
+import queryGenerator from "../utils/query.js";
 
 const readGames = async (req, res) => {
-  const { name } = req.query;
-  const { queryString, params } = res.locals;
+  const { name, limit, offset, order, desc } = req.query;
+  const isOrderValid = ["id", "name", "image", "stockTotal", "pricePerDay"].find(
+    item => item === order
+  );
+  const queryValues = { limit, offset, order: isOrderValid ? order : null, desc };
 
-  let query = "SELECT * FROM games";
+  const filters = [];
+  let queryString = "SELECT * FROM games";
   if (name) {
-    params.unshift(`${name}%`);
-    query += ` WHERE LOWER(name) LIKE LOWER($${params.length})`;
+    filters.push(`${name}%`);
+    queryString += ` WHERE LOWER(name) LIKE LOWER($1)`;
   }
-  query += queryString;
+  const { query, params } = queryGenerator(queryString, filters, queryValues);
 
   try {
     const { rows: games } = await db.query(query, params);

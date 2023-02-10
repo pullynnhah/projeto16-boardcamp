@@ -1,13 +1,22 @@
 import { StatusCodes } from "http-status-codes";
 
 import db from "../database/db.connection.js";
+import queryGenerator from "../utils/query.js";
 
 const readRentals = async (req, res) => {
-  const { customerId, gameId, status, startDate } = req.query;
-  const { queryString, params } = res.locals;
-  let colCount = [customerId, gameId, startDate].filter(param => param).length;
-
-  let query = `
+  const { customerId, gameId, status, startDate, limit, offset, order, desc } = req.query;
+  const isOrderValid = [
+    "id",
+    "customerId",
+    "gameId",
+    "rentDate",
+    "daysRented",
+    "returnDate",
+    "originalPrice",
+    "delayFee"
+  ].find(item => item === order);
+  const queryValues = { limit, offset, order: isOrderValid ? order : null, desc };
+  let queryString = `
   SELECT r.*, 
         json_build_object('id', c.id, 'name', c.name) AS customer,
         json_build_object('id', g.id, 'name', g.name) AS game
@@ -16,15 +25,16 @@ const readRentals = async (req, res) => {
   JOIN games g ON g.id = r."gameId"
   `;
 
+  const filters = [];
   const conditionals = [];
   if (customerId) {
-    params.unshift(customerId);
-    conditionals.push(`"customerId" = $${colCount--}`);
+    filters.push(customerId);
+    conditionals.push(`"customerId" = $${filters.length}`);
   }
 
   if (gameId) {
-    params.unshift(gameId);
-    conditionals.push(`"gameId" = $${colCount--}`);
+    filters.push(gameId);
+    conditionals.push(`"gameId" = $${filters.length}`);
   }
 
   if (status === "open") {
@@ -34,13 +44,13 @@ const readRentals = async (req, res) => {
   }
 
   if (startDate) {
-    params.unshift(startDate);
-    conditionals.push(`"rentDate" >= $${colCount}`);
+    filters.push(startDate);
+    conditionals.push(`"rentDate" >= $${filters.length}`);
   }
 
   const conditionString = conditionals.join(" AND ");
-  query += conditionString ? "WHERE " + conditionString : "";
-  query += queryString;
+  queryString += conditionString ? "WHERE " + conditionString : "";
+  const { query, params } = queryGenerator(queryString, filters, queryValues);
   try {
     const { rows: rentals } = await db.query(query, params);
     res.send(rentals);
