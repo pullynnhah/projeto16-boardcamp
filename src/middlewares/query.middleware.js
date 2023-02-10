@@ -1,7 +1,8 @@
 const query = (req, res, next) => {
-  const { customerId, gameId, cpf, name, limit, offset, order, desc } = req.query;
+  const { customerId, gameId, status, cpf, name, startDate, limit, offset, order, desc } =
+    req.query;
 
-  let colCount = [customerId, gameId, cpf, name].filter(param => param).length;
+  let colCount = [customerId, gameId, status, cpf, name, startDate].filter(param => param).length;
   let query = "";
   const params = [];
 

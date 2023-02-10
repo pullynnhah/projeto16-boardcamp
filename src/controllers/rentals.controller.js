@@ -3,8 +3,9 @@ import { StatusCodes } from "http-status-codes";
 import db from "../database/db.connection.js";
 
 const readRentals = async (req, res) => {
-  const { customerId, gameId } = req.query;
+  const { customerId, gameId, status, startDate } = req.query;
   const { queryString, params } = res.locals;
+  let colCount = [customerId, gameId, startDate].filter(param => param).length;
 
   let query = `
   SELECT r.*, 
@@ -15,19 +16,31 @@ const readRentals = async (req, res) => {
   JOIN games g ON g.id = r."gameId"
   `;
 
-  if (customerId && gameId) {
-    params.unshift(gameId);
+  const conditionals = [];
+  if (customerId) {
     params.unshift(customerId);
-    query += ` WHERE "customerId" = $${params.length - 1} AND "gameId" $${params.length}`;
-  } else if (customerId) {
-    params.unshift(customerId);
-    query += ` WHERE "customerId" = $${params.length}`;
-  } else if (gameId) {
-    params.unshift(gameId);
-    query += ` WHERE "gameId" = $${params.length}`;
+    conditionals.push(`"customerId" = $${colCount--}`);
   }
-  query += queryString;
 
+  if (gameId) {
+    params.unshift(gameId);
+    conditionals.push(`"gameId" = $${colCount--}`);
+  }
+
+  if (status === "open") {
+    conditionals.push(`"returnDate" IS NULL`);
+  } else if (status === "closed") {
+    conditionals.push(`r."returnDate" IS NOT NULL`);
+  }
+
+  if (startDate) {
+    params.unshift(startDate);
+    conditionals.push(`"rentDate" >= $${colCount--}`);
+  }
+
+  const conditionString = conditionals.join(" AND ");
+  query += conditionString ? "WHERE " + conditionString : "";
+  query += queryString;
   try {
     const { rows: rentals } = await db.query(query, params);
     res.send(rentals);
