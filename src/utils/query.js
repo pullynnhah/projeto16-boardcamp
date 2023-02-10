@@ -9,12 +9,12 @@ const queryGenerator = (query, params, queryValues) => {
 
   if (limit) {
     params.push(Number(limit));
-    query += ` LIMIT $${params.length + colCount}`;
+    query += ` LIMIT $${params.length}`;
   }
 
   if (offset) {
     params.push(Number(offset));
-    query += ` OFFSET $${params.length + colCount}`;
+    query += ` OFFSET $${params.length}`;
   }
 
   return { query, params };
