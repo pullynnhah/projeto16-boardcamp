@@ -2,11 +2,12 @@ import { StatusCodes } from "http-status-codes";
 
 const query = column => (req, res, next) => {
   const { limit, offset, order, desc } = req.query;
-  const filter1 = req.query[column];
+  const filter = req.query[column];
   const params = [];
 
   let query = "";
-  if (filter1) {
+  if (filter) {
+    params.push(`${filter}%`);
     query += ` WHERE LOWER("${column}") LIKE LOWER($${params.length})`;
   }
 
