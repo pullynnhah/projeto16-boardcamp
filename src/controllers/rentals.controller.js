@@ -35,7 +35,7 @@ const readRentals = async (req, res) => {
 
   if (startDate) {
     params.unshift(startDate);
-    conditionals.push(`"rentDate" >= $${colCount--}`);
+    conditionals.push(`"rentDate" >= $${colCount}`);
   }
 
   const conditionString = conditionals.join(" AND ");
