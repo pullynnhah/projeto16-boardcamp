@@ -80,10 +80,9 @@ const createRental = async (req, res) => {
     )
     AND (
       SELECT COUNT(*)
-      FROM games g
-      JOIN rentals r ON r."gameId" = g.id
-      WHERE g.id = $9 
-      AND r."returnDate" ISNULL
+      FROM rentals
+      WHERE "gameId" = $9 
+      AND "returnDate" ISNULL
 
     ) < (
       SELECT "stockTotal"
